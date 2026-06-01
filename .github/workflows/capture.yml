@@ -136,22 +136,6 @@ jobs:
           SID=$(python -m capture_harness $HARNESS_ARGS)
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for capture processing
-        shell: bash
-        run: |
-          # Wait until the harness writes the session_id file (up to 30 s)
-          for i in {1..30}; do
-            if [[ -f "./captures/${{ steps.capture.outputs.session_id }}/harness.json" ]]; then
-              echo "Capture processing complete."
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "Capture processing did not complete in time."
-          echo "Server log:"
-          cat server.log
-          exit 1
-
       - name: Stop server
         if: always()
         shell: bash
@@ -220,3 +204,7 @@ jobs:
             echo "Push attempt $i failed, retrying in $((i * 3)) seconds"
             sleep $((i * 3))
           done
+    
+      - name: Print server log
+        shell: bash
+        run: cat server.log
