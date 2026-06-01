@@ -3,10 +3,10 @@
     "extension_types_differ_across_conns",
     "alpn_differs_across_conns"
   ],
-  "canonical_conn": "0002",
+  "canonical_conn": "0003",
   "conn_count": 5,
   "schema_version": 1,
-  "session_id": "55dc6597-7425-4958-96bf-fa68694dbad6",
+  "session_id": "03bca088-e11e-4713-91f0-edbfb97be7da",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
@@ -16,27 +16,27 @@
     "extension_order": {
       "distinct_orders_seen": 4,
       "permuted_extensions_subset": [
+        "0x001b",
+        "0xff01",
+        "0x0000",
+        "0xfe0d",
+        "0x0017",
         "0x0012",
+        "0x44cd",
+        "0x000b",
+        "0x000d",
+        "0x002b",
+        "0x000a",
+        "0x0023",
+        "0x0010",
         "0x0033",
         "0x002d",
-        "0x002b",
-        "0xfe0d",
-        "0x000d",
-        "0x000a",
-        "0x0017",
-        "0x44cd",
-        "0x0010",
-        "0x001b",
-        "0x0023",
-        "0x000b",
-        "0x0000",
-        "0xff01",
         "0x0005"
       ],
       "verdict": "permuted"
     },
     "grease_values": {
-      "ciphers_grease_distinct_values": 5,
+      "ciphers_grease_distinct_values": 3,
       "extensions_grease_distinct_values": 5,
       "verdict": "rotating_as_expected"
     }
