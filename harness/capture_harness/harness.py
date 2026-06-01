@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+import time
 import platform
 import subprocess
 import sys
@@ -174,9 +175,7 @@ def run_harness(
     if ci_mode:
         logger.info("CI mode: killing server by requesting /die")
         import requests
-        try:
-            requests.get(f"{base_url.rstrip('/')}/die")
-        except Exception:
-            pass
+        requests.get(f"{base_url.rstrip('/')}/die")
+        time.sleep(3)
 
     return session_id
