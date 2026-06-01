@@ -174,11 +174,11 @@ jobs:
 
           src = Path(f"fingerprints/{sid}.json")
           if src.exists():
-              shutil.copy(src, f"fingerprints/{slug}.json")
+              shutil.move(src, f"fingerprints/{slug}.json")
 
           vsrc = Path(f"fingerprints/{sid}.variation.json")
           if vsrc.exists():
-              shutil.copy(vsrc, f"fingerprints/{slug}.variation.json")
+              shutil.move(vsrc, f"fingerprints/{slug}.variation.json")
 
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write(f"FP_SLUG={slug}\n")

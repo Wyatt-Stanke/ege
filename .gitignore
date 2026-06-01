@@ -1,5 +1,5 @@
 .venv/
 captures/
-fingerprints/
+parser/fingerprints/
 .pytest_cache/
 *.pyc
