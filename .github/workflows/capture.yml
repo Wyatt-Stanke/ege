@@ -162,48 +162,61 @@ jobs:
           sid = os.environ["SESSION_ID"]
           h = json.loads(Path(f"captures/{sid}/harness.json").read_text())
 
+          # Extract raw components
+          browser = h["browser"].lower()
+          version = h["browser_version"]
+          system = h["platform"]["system"].lower()
+          machine = h["platform"]["machine"].lower()
+
+          # Build the filename slug
           slug = re.sub(
               r"[^a-z0-9._-]", "_",
-              "{browser}-{version}-{system}-{machine}".format(
-                  browser=h["browser"],
-                  version=h["browser_version"],
-                  system=h["platform"]["system"].lower(),
-                  machine=h["platform"]["machine"].lower(),
-              ),
+              f"{browser}-{version}-{system}-{machine}"
           )
 
-          Path("fingerprints").mkdir(exist_ok=True)
+          # Define the target directory path: fingerprints/browser/version/system/machine/
+          target_dir = Path("fingerprints") / browser / version / system / machine
+          target_dir.mkdir(parents=True, exist_ok=True)
+
+          # Track the actual path for GitHub Actions environment down the line
+          dest_base = target_dir / slug
 
           src = Path(f"fingerprints/{sid}.json")
           if src.exists():
-              shutil.move(src, f"fingerprints/{slug}.json")
-              print(f"Renamed fingerprint {sid}.json to {slug}.json", flush=True)
+              shutil.move(src, f"{dest_base}.json")
+              print(f"Renamed fingerprint {sid}.json to {dest_base}.json", flush=True)
           else:
               print(f"Fingerprint not found at {src}, skipping rename.", flush=True)
 
           vsrc = Path(f"fingerprints/{sid}.variation.json")
           if vsrc.exists():
-              shutil.move(vsrc, f"fingerprints/{slug}.variation.json")
-              print(f"Renamed variation {sid}.variation.json to {slug}.variation.json", flush=True)
+              shutil.move(vsrc, f"{dest_base}.variation.json")
+              print(f"Renamed variation {sid}.variation.json to {dest_base}.variation.json", flush=True)
           else:
               print(f"Variation file not found at {vsrc}, skipping rename.", flush=True)
 
+          # Pass both the folder structure and slug down to Git step
           with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"FP_DIR={target_dir}\n")
               f.write(f"FP_SLUG={slug}\n")
 
-          print(f"Fingerprint slug: {slug}", flush=True)
+          print(f"Fingerprint slug: {slug} moved to {target_dir}", flush=True)
           PYEOF
 
       - name: Commit fingerprint
         shell: bash
         env:
+          FP_DIR: ${{ env.FP_DIR }}
           FP_SLUG: ${{ env.FP_SLUG }}
         run: |
-          echo "Committing fingerprint with slug: ${FP_SLUG}"
+          echo "Committing fingerprint with slug: ${FP_SLUG} in ${FP_DIR}"
           git config user.email "fingerprint-bot@ege"
           git config user.name "fingerprint-bot"
-          git add "fingerprints/${FP_SLUG}.json" \
-                  "fingerprints/${FP_SLUG}.variation.json"
+          
+          # Stage files using the new nested directory tracking path
+          git add "${FP_DIR}/${FP_SLUG}.json" \
+                  "${FP_DIR}/${FP_SLUG}.variation.json"
+          
           git status
           git diff --staged --quiet && echo "Nothing new to commit." && exit 0
           git commit -m "fingerprint: ${FP_SLUG}"
