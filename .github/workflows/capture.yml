@@ -115,15 +115,13 @@ jobs:
 
       - name: Trust cert and enable safaridriver (Safari only)
         if: matrix.browser == 'safari'
+        timeout-minutes: 5
         shell: bash
         run: |
-          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db
-          
-          security add-trusted-cert -d -r trustRoot \
-            -k ~/Library/Keychains/login.keychain-db \
+          sudo security add-trusted-cert -d -r trustRoot \
+            -k /Library/Keychains/System.keychain \
             ./certs/cert.pem
-          
-          safaridriver --enable
+          sudo safaridriver --enable
 
       - name: Run harness
         id: capture
