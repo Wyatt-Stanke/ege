@@ -40,7 +40,6 @@ def main() -> None:
             out_dir=Path(args.out),
             cert_dir=Path(args.cert_dir),
             idle_timeout=args.idle_timeout,
-            ci_mode=args.ci_mode,
             max_conn_bytes=args.max_conn_bytes,
         )
     )
