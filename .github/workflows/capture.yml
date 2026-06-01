@@ -91,8 +91,7 @@ jobs:
               --port 8443 \
               --bind 127.0.0.1 \
               --out ./captures \
-              --cert-dir ./certs \
-              --log-level WARNING > server.log 2>&1 &
+              --cert-dir ./certs > server.log 2>&1 &
           echo $! > server.pid
 
           python - << 'EOF'
@@ -193,7 +192,8 @@ jobs:
           git config user.email "fingerprint-bot@ege"
           git config user.name "fingerprint-bot"
           git add "fingerprints/${FP_SLUG}.json" \
-                  "fingerprints/${FP_SLUG}.variation.json" 2>/dev/null || true
+                  "fingerprints/${FP_SLUG}.variation.json"
+          git status
           git diff --staged --quiet && echo "Nothing new to commit." && exit 0
           git commit -m "fingerprint: ${FP_SLUG}"
 
