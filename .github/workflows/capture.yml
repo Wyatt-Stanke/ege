@@ -92,7 +92,7 @@ jobs:
               --bind 127.0.0.1 \
               --out ./captures \
               --cert-dir ./certs \
-              --log-level WARNING &
+              --log-level WARNING > server.log 2>&1 &
           echo $! > server.pid
 
           python - << 'EOF'
@@ -136,6 +136,22 @@ jobs:
           SID=$(python -m capture_harness $HARNESS_ARGS)
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
 
+      - name: Wait for capture processing
+        shell: bash
+        run: |
+          # Wait until the harness writes the session_id file (up to 30 s)
+          for i in {1..30}; do
+            if [[ -f "./captures/${{ steps.capture.outputs.session_id }}/harness.json" ]]; then
+              echo "Capture processing complete."
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Capture processing did not complete in time."
+          echo "Server log:"
+          cat server.log
+          exit 1
+
       - name: Stop server
         if: always()
         shell: bash
@@ -175,10 +191,14 @@ jobs:
           src = Path(f"fingerprints/{sid}.json")
           if src.exists():
               shutil.move(src, f"fingerprints/{slug}.json")
+          else:
+              print(f"Fingerprint not found at {src}, skipping rename.", flush=True)
 
           vsrc = Path(f"fingerprints/{sid}.variation.json")
           if vsrc.exists():
               shutil.move(vsrc, f"fingerprints/{slug}.variation.json")
+          else:
+              print(f"Variation file not found at {vsrc}, skipping rename.", flush=True)
 
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write(f"FP_SLUG={slug}\n")
