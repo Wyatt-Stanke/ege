@@ -117,9 +117,12 @@ jobs:
         if: matrix.browser == 'safari'
         shell: bash
         run: |
-          sudo security add-trusted-cert -d -r trustRoot \
-              -k /Library/Keychains/System.keychain \
-              ./certs/cert.pem
+          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db
+          
+          security add-trusted-cert -d -r trustRoot \
+            -k ~/Library/Keychains/login.keychain-db \
+            ./certs/cert.pem
+          
           safaridriver --enable
 
       - name: Run harness
