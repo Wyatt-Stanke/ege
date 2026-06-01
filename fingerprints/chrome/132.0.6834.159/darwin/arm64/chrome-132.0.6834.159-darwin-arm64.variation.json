@@ -1,0 +1,44 @@
+{
+  "anomalies": [
+    "extension_types_differ_across_conns",
+    "alpn_differs_across_conns"
+  ],
+  "canonical_conn": "0002",
+  "conn_count": 5,
+  "schema_version": 1,
+  "session_id": "4bb4aae5-2b82-48ec-99e0-ae915a3a8898",
+  "stable": [
+    "ciphers_multiset",
+    "supported_groups",
+    "signature_algorithms"
+  ],
+  "varied": {
+    "extension_order": {
+      "distinct_orders_seen": 4,
+      "permuted_extensions_subset": [
+        "0xfe0d",
+        "0x0033",
+        "0x0012",
+        "0x0010",
+        "0x002b",
+        "0x001b",
+        "0x0005",
+        "0x002d",
+        "0x000b",
+        "0x44cd",
+        "0x0023",
+        "0x0000",
+        "0xff01",
+        "0x0017",
+        "0x000a",
+        "0x000d"
+      ],
+      "verdict": "permuted"
+    },
+    "grease_values": {
+      "ciphers_grease_distinct_values": 4,
+      "extensions_grease_distinct_values": 5,
+      "verdict": "rotating_as_expected"
+    }
+  }
+}
