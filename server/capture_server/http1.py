@@ -118,17 +118,22 @@ class Http1Connection:
             self.session_id = resp.new_session_id
 
         # Encode through h11
-        h11_headers = list(resp.headers)
-        h11_headers.append(("content-length", str(len(resp.body))))
-
-        # 101 responses must not get content-length / connection headers
         if resp.status == 101:
+            # 101 Switching Protocols MUST use InformationalResponse
+            # and transitions the state to SWITCHED_PROTOCOL.
+            out = self.conn.send(
+                h11.InformationalResponse(status_code=101, headers=resp.headers)
+            )
+            # Do NOT send Data or EndOfMessage for a 101 status.
+        else:
             h11_headers = list(resp.headers)
+            h11_headers.append(("content-length", str(len(resp.body))))
+            
+            out = self.conn.send(
+                h11.Response(status_code=resp.status, headers=h11_headers)
+            )
+            if resp.body:
+                out += self.conn.send(h11.Data(data=resp.body))
+            out += self.conn.send(h11.EndOfMessage())
 
-        out = self.conn.send(
-            h11.Response(status_code=resp.status, headers=h11_headers)
-        )
-        if resp.body:
-            out += self.conn.send(h11.Data(data=resp.body))
-        out += self.conn.send(h11.EndOfMessage())
         return out
