@@ -64,6 +64,7 @@ def run_harness(
     headless: bool,
     use_xvfb: bool,
     binary: str | None,
+    browser_version: str | None,
     cert_pem: str | None,
     keep_profile: bool,
     ci_mode: bool,
@@ -99,7 +100,8 @@ def run_harness(
 
     from .browsers import get_browser_driver
     drv_factory = get_browser_driver(
-        browser, binary=binary, headless=headless, keep_profile=keep_profile
+        browser, binary=binary, headless=headless, keep_profile=keep_profile,
+        browser_version=browser_version,
     )
 
     ctx: _NullContext | Xvfb = Xvfb() if use_xvfb else _NullContext()

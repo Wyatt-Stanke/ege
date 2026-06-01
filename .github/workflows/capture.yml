@@ -2,42 +2,112 @@ name: capture-fingerprints
 
 on:
   schedule:
-    - cron: '0 6 * * *' # 6PM everyday
+    - cron: '0 6 * * *'   # 06:00 UTC daily
   workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser (leave blank to run full default matrix)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - chrome
+          - firefox
+          - edge
+          - safari
+      browser_version:
+        description: >
+          Browser version to capture, e.g. "130", "130.0.6723.69", "beta", "dev", "canary".
+          Leave blank or "stable" for the runner default. Only applies when browser is set.
+        required: false
+        default: 'stable'
+      os:
+        description: 'Runner OS (leave blank to use the default for the selected browser)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - ubuntu-24.04
+          - macos-15
+          - windows-2025
+      mode:
+        description: 'Run mode (leave blank to use the default for the selected browser+os)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - xvfb
+          - headless
+          - headed
 
 permissions:
   contents: write   # needed to push fingerprint commits
 
 jobs:
+  setup_matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.build.outputs.matrix }}
+    steps:
+      - id: build
+        shell: python
+        env:
+          INPUT_BROWSER: ${{ inputs.browser }}
+          INPUT_BROWSER_VERSION: ${{ inputs.browser_version }}
+          INPUT_OS: ${{ inputs.os }}
+          INPUT_MODE: ${{ inputs.mode }}
+        run: |
+          import json, os
+
+          browser         = os.environ.get("INPUT_BROWSER", "").strip()
+          browser_version = os.environ.get("INPUT_BROWSER_VERSION", "stable").strip() or "stable"
+          override_os     = os.environ.get("INPUT_OS", "").strip()
+          override_mode   = os.environ.get("INPUT_MODE", "").strip()
+
+          DEFAULT_MATRIX = [
+              {"os": "ubuntu-24.04",  "browser": "chrome",  "mode": "xvfb",     "browser_version": "stable"},
+              {"os": "ubuntu-24.04",  "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
+              {"os": "macos-15",      "browser": "chrome",  "mode": "headless",  "browser_version": "stable"},
+              {"os": "macos-15",      "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
+              {"os": "macos-15",      "browser": "safari",  "mode": "headed",    "browser_version": "stable"},
+              {"os": "windows-2025",  "browser": "chrome",  "mode": "headless",  "browser_version": "stable"},
+              {"os": "windows-2025",  "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
+              {"os": "windows-2025",  "browser": "edge",    "mode": "headless",  "browser_version": "stable"},
+          ]
+
+          # Default OS and mode per browser when not explicitly specified
+          BROWSER_DEFAULTS = {
+              "chrome":  {"os": "ubuntu-24.04", "mode": "xvfb"},
+              "firefox": {"os": "ubuntu-24.04", "mode": "headless"},
+              "edge":    {"os": "windows-2025", "mode": "headless"},
+              "safari":  {"os": "macos-15",     "mode": "headed"},
+          }
+
+          if browser:
+              defaults = BROWSER_DEFAULTS.get(browser, {"os": "ubuntu-24.04", "mode": "headless"})
+              entry = {
+                  "os":              override_os   or defaults["os"],
+                  "browser":         browser,
+                  "mode":            override_mode or defaults["mode"],
+                  "browser_version": browser_version,
+              }
+              matrix = {"include": [entry]}
+          else:
+              matrix = {"include": DEFAULT_MATRIX}
+
+          output = json.dumps(matrix)
+          print(f"matrix={output}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"matrix={output}\n")
+
   capture:
+    needs: setup_matrix
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            browser: chrome
-            mode: xvfb
-          - os: ubuntu-24.04
-            browser: firefox
-            mode: headless
-          - os: macos-15
-            browser: chrome
-            mode: headless
-          - os: macos-15
-            browser: firefox
-            mode: headless
-          - os: macos-15
-            browser: safari
-            mode: headed   # Safari has no headless mode
-          - os: windows-2025
-            browser: chrome
-            mode: headless
-          - os: windows-2025
-            browser: firefox
-            mode: headless
-          - os: windows-2025
-            browser: edge
-            mode: headless
+      matrix: ${{ fromJSON(needs.setup_matrix.outputs.matrix) }}
 
     runs-on: ${{ matrix.os }}
 
@@ -47,6 +117,27 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: '3.14'
+
+      - name: Install pinned Chrome
+        id: setup_chrome
+        if: matrix.browser == 'chrome' && matrix.browser_version != 'stable'
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: ${{ matrix.browser_version }}
+
+      - name: Install pinned Firefox
+        id: setup_firefox
+        if: matrix.browser == 'firefox' && matrix.browser_version != 'stable'
+        uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: ${{ matrix.browser_version }}
+
+      - name: Install pinned Edge
+        id: setup_edge
+        if: matrix.browser == 'edge' && matrix.browser_version != 'stable'
+        uses: browser-actions/setup-edge@v1
+        with:
+          edge-version: ${{ matrix.browser_version }}
 
       - name: Set PYTHONPATH (Unix)
         if: runner.os != 'Windows'
@@ -62,7 +153,7 @@ jobs:
           $paths = "$env:GITHUB_WORKSPACE\server;$env:GITHUB_WORKSPACE\parser;$env:GITHUB_WORKSPACE\harness"
           "PYTHONPATH=$paths" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         shell: bash
         run: |
           pip install -r server/requirements.txt
@@ -126,13 +217,33 @@ jobs:
       - name: Run harness
         id: capture
         shell: bash
+        env:
+          # Paths set by the setup-chrome / setup-firefox / setup-edge actions
+          CHROME_BINARY: ${{ steps.setup_chrome.outputs.chrome-path }}
+          FIREFOX_BINARY: ${{ steps.setup_firefox.outputs.firefox-path }}
+          EDGE_BINARY: ${{ steps.setup_edge.outputs.edge-path }}
         run: |
           HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures"
+
           if [[ "${{ matrix.mode }}" == "xvfb" ]]; then
             HARNESS_ARGS="$HARNESS_ARGS --xvfb"
           elif [[ "${{ matrix.mode }}" == "headless" ]]; then
             HARNESS_ARGS="$HARNESS_ARGS --headless"
           fi
+
+          if [[ "${{ matrix.browser_version }}" != "stable" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --browser-version ${{ matrix.browser_version }}"
+          fi
+
+          # Pass the pinned binary path when available
+          if [[ -n "$CHROME_BINARY" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --binary $CHROME_BINARY"
+          elif [[ -n "$FIREFOX_BINARY" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --binary $FIREFOX_BINARY"
+          elif [[ -n "$EDGE_BINARY" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --binary $EDGE_BINARY"
+          fi
+
           SID=$(python -m capture_harness $HARNESS_ARGS)
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
 
@@ -160,45 +271,33 @@ jobs:
           sid = os.environ["SESSION_ID"]
           h = json.loads(Path(f"captures/{sid}/harness.json").read_text())
 
-          # Extract raw components
           browser = h["browser"].lower()
           version = h["browser_version"]
-          system = h["platform"]["system"].lower()
+          system  = h["platform"]["system"].lower()
           machine = h["platform"]["machine"].lower()
 
-          # Build the filename slug
           slug = re.sub(
               r"[^a-z0-9._-]", "_",
               f"{browser}-{version}-{system}-{machine}"
           )
 
-          # Define the target directory path: fingerprints/browser/version/system/machine/
           target_dir = Path("fingerprints") / browser / version / system / machine
           target_dir.mkdir(parents=True, exist_ok=True)
-
-          # Track the actual path for GitHub Actions environment down the line
           dest_base = target_dir / slug
 
           src = Path(f"fingerprints/{sid}.json")
           if src.exists():
               shutil.move(src, f"{dest_base}.json")
-              print(f"Renamed fingerprint {sid}.json to {dest_base}.json", flush=True)
-          else:
-              print(f"Fingerprint not found at {src}, skipping rename.", flush=True)
 
           vsrc = Path(f"fingerprints/{sid}.variation.json")
           if vsrc.exists():
               shutil.move(vsrc, f"{dest_base}.variation.json")
-              print(f"Renamed variation {sid}.variation.json to {dest_base}.variation.json", flush=True)
-          else:
-              print(f"Variation file not found at {vsrc}, skipping rename.", flush=True)
 
-          # Pass both the folder structure and slug down to Git step
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write(f"FP_DIR={target_dir}\n")
               f.write(f"FP_SLUG={slug}\n")
 
-          print(f"Fingerprint slug: {slug} moved to {target_dir}", flush=True)
+          print(f"Fingerprint: {dest_base}", flush=True)
           PYEOF
 
       - name: Commit fingerprint
@@ -207,27 +306,21 @@ jobs:
           FP_DIR: ${{ env.FP_DIR }}
           FP_SLUG: ${{ env.FP_SLUG }}
         run: |
-          echo "Committing fingerprint with slug: ${FP_SLUG} in ${FP_DIR}"
           git config user.email "fingerprint-bot@ege"
           git config user.name "fingerprint-bot"
-          
-          # Stage files using the new nested directory tracking path
           git add "${FP_DIR}/${FP_SLUG}.json" \
-                  "${FP_DIR}/${FP_SLUG}.variation.json"
-          
-          git status
+                  "${FP_DIR}/${FP_SLUG}.variation.json" 2>/dev/null || true
           git diff --staged --quiet && echo "Nothing new to commit." && exit 0
           git commit -m "fingerprint: ${FP_SLUG}"
 
-          # Push with rebase-retry to tolerate concurrent matrix job pushes
           for i in 1 2 3 4 5 6 7 8; do
             git fetch origin main
             git rebase origin/main && git push origin HEAD:main && break
-            echo "Push attempt $i failed, retrying in $((i * 3)) seconds"
+            echo "Push attempt $i failed, retrying in $((i * 3))s"
             sleep $((i * 3))
           done
-    
+
       - name: Print server log
-        shell: bash
         if: always()
+        shell: bash
         run: cat server.log

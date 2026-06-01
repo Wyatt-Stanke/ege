@@ -6,8 +6,9 @@ def get_browser_driver(
     binary: str | None = None,
     headless: bool = False,
     keep_profile: bool = False,
+    browser_version: str | None = None,
 ) -> BrowserDriver:
-    kwargs = dict(binary=binary, headless=headless, keep_profile=keep_profile)
+    kwargs = dict(binary=binary, headless=headless, keep_profile=keep_profile, browser_version=browser_version)
     if browser == "chrome":
         from .chrome import ChromeDriver
         return ChromeDriver(**kwargs)

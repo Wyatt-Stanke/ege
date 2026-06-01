@@ -45,6 +45,12 @@ class ChromeDriver(BrowserDriver):
         opts.add_argument("--disable-features=NetworkServiceInProcess")
         opts.set_capability("acceptInsecureCerts", True)
 
+        # Tell Selenium Manager which chromedriver version to pair with.
+        # When a specific binary is supplied the version is already pinned, but
+        # this also handles the no-binary case where SM downloads both.
+        if self.browser_version:
+            opts.browser_version = self.browser_version
+
         if self.headless:
             # --headless=new uses the production Chrome binary (not headless_shell)
             opts.add_argument("--headless=new")

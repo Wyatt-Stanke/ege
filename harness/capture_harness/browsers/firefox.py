@@ -38,6 +38,9 @@ class FirefoxDriver(BrowserDriver):
         # acceptInsecureCerts is enough for Firefox — no extra flags needed
         opts.set_capability("acceptInsecureCerts", True)
 
+        if self.browser_version:
+            opts.browser_version = self.browser_version
+
         if self.headless:
             # Firefox -headless uses the same binary as headed
             opts.add_argument("-headless")

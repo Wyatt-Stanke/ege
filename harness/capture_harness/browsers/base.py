@@ -6,10 +6,11 @@ from abc import ABC, abstractmethod
 
 
 class BrowserDriver(ABC):
-    def __init__(self, binary: str | None, headless: bool, keep_profile: bool):
+    def __init__(self, binary: str | None, headless: bool, keep_profile: bool, browser_version: str | None = None):
         self.binary = binary
         self.headless = headless
         self.keep_profile = keep_profile
+        self.browser_version = browser_version
         self._profile_dir: str | None = None
 
     def _make_profile(self) -> str:

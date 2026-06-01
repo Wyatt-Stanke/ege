@@ -36,6 +36,13 @@ def main(argv=None) -> int:
         help="Run headless: --headless=new for Chrome/Edge, -headless for Firefox.",
     )
     parser.add_argument(
+        "--browser-version", default=None, metavar="VERSION",
+        help="Browser version to capture (e.g. '130', '130.0.6723.69', 'beta', 'dev'). "
+             "In CI, the matching browser must already be installed (e.g. via "
+             "browser-actions/setup-chrome). The harness passes this to Selenium Manager "
+             "so the correct driver version is paired.",
+    )
+    parser.add_argument(
         "--binary", default=None,
         help="Override browser binary path.",
     )
@@ -80,6 +87,7 @@ def main(argv=None) -> int:
             headless=args.headless,
             use_xvfb=args.xvfb,
             binary=args.binary,
+            browser_version=args.browser_version,
             cert_pem=args.cert_pem,
             keep_profile=args.keep_profile,
             ci_mode=args.ci_mode,

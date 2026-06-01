@@ -39,6 +39,9 @@ class EdgeDriver(BrowserDriver):
         opts.add_argument("--disable-dev-shm-usage")
         opts.set_capability("acceptInsecureCerts", True)
 
+        if self.browser_version:
+            opts.browser_version = self.browser_version
+
         if self.headless:
             opts.add_argument("--headless=new")
 
