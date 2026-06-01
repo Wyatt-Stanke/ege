@@ -225,4 +225,5 @@ jobs:
     
       - name: Print server log
         shell: bash
+        if: always()
         run: cat server.log
