@@ -246,28 +246,32 @@ jobs:
           FIREFOX_BINARY: ${{ steps.setup_firefox.outputs.firefox-path }}
           EDGE_BINARY: ${{ steps.setup_edge.outputs.edge-path }}
         run: |
-          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures"
+          BINARY_PATH=""
+          if [[ -n "$CHROME_BINARY" ]]; then
+            BINARY_PATH="$CHROME_BINARY"
+          elif [[ -n "$FIREFOX_BINARY" ]]; then
+            BINARY_PATH="$FIREFOX_BINARY"
+          elif [[ -n "$EDGE_BINARY" ]]; then
+            BINARY_PATH="$EDGE_BINARY"
+          fi
+
+          HARNESS_ARGS=("--browser" "${{ matrix.browser }}" "--captures-dir" "./captures")
 
           if [[ "${{ matrix.mode }}" == "xvfb" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --xvfb"
+            HARNESS_ARGS+=("--xvfb")
           elif [[ "${{ matrix.mode }}" == "headless" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --headless"
+            HARNESS_ARGS+=("--headless")
           fi
 
           if [[ "${{ matrix.browser_version }}" != "stable" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --browser-version ${{ matrix.browser_version }}"
+            HARNESS_ARGS+=("--browser-version" "${{ matrix.browser_version }}")
           fi
 
-          # Pass the pinned binary path when available
-          if [[ -n "$CHROME_BINARY" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --binary $CHROME_BINARY"
-          elif [[ -n "$FIREFOX_BINARY" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --binary $FIREFOX_BINARY"
-          elif [[ -n "$EDGE_BINARY" ]]; then
-            HARNESS_ARGS="$HARNESS_ARGS --binary $EDGE_BINARY"
+          if [[ -n "$BINARY_PATH" ]]; then
+            HARNESS_ARGS+=("--binary" "$BINARY_PATH")
           fi
 
-          SID=$(python -m capture_harness $HARNESS_ARGS)
+          SID=$(python -m capture_harness "${HARNESS_ARGS[@]}")
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
 
       - name: Stop server
