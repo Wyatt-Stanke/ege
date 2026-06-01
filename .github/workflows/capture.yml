@@ -147,7 +147,7 @@ jobs:
               "./captures/${{ steps.capture.outputs.session_id }}" \
               --out ./fingerprints
 
-      - name: Name and commit fingerprint
+      - name: Name fingerprint
         shell: bash
         env:
           SESSION_ID: ${{ steps.capture.outputs.session_id }}
@@ -174,12 +174,14 @@ jobs:
           src = Path(f"fingerprints/{sid}.json")
           if src.exists():
               shutil.move(src, f"fingerprints/{slug}.json")
+              print(f"Renamed fingerprint {sid}.json to {slug}.json", flush=True)
           else:
               print(f"Fingerprint not found at {src}, skipping rename.", flush=True)
 
           vsrc = Path(f"fingerprints/{sid}.variation.json")
           if vsrc.exists():
               shutil.move(vsrc, f"fingerprints/{slug}.variation.json")
+              print(f"Renamed variation {sid}.variation.json to {slug}.variation.json", flush=True)
           else:
               print(f"Variation file not found at {vsrc}, skipping rename.", flush=True)
 
@@ -189,6 +191,12 @@ jobs:
           print(f"Fingerprint slug: {slug}", flush=True)
           PYEOF
 
+      - name: Commit fingerprint
+        shell: bash
+        env:
+          FP_SLUG: ${{ env.FP_SLUG }}
+        run: |
+          echo "Committing fingerprint with slug: ${FP_SLUG}"
           git config user.email "fingerprint-bot@ege"
           git config user.name "fingerprint-bot"
           git add "fingerprints/${FP_SLUG}.json" \
