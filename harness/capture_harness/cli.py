@@ -51,6 +51,11 @@ def main(argv=None) -> int:
         "--log-level", default="INFO",
         help="Logging level (default: INFO).",
     )
+    parser.add_argument(
+        "--ci-mode",
+        action="store_true",
+        help="Kill server when done.",
+    )
 
     args = parser.parse_args(argv)
 
@@ -77,6 +82,7 @@ def main(argv=None) -> int:
             binary=args.binary,
             cert_pem=args.cert_pem,
             keep_profile=args.keep_profile,
+            ci_mode=args.ci_mode,
         )
         # Print session UUID to stdout — nothing else
         print(session_id)

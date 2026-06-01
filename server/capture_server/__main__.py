@@ -25,11 +25,6 @@ def main() -> None:
         type=int,
         default=int(env("MAX_CONN_BYTES", str(5 * 1024 * 1024))),
     )
-    parser.add_argument(
-        "--ci-mode",
-        action="store_true",
-        help="Auto-exit after no connections for 10 seconds, after at least one connection was handled.",
-    )
     parser.add_argument("--log-level", default=env("LOG_LEVEL", "INFO"))
 
     args = parser.parse_args()

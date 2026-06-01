@@ -65,6 +65,7 @@ def run_harness(
     binary: str | None,
     cert_pem: str | None,
     keep_profile: bool,
+    ci_mode: bool,
 ) -> str:
     """
     Full harness flow.
@@ -169,5 +170,13 @@ def run_harness(
         raise RuntimeError(
             f"Browser driver failed before session could complete (browser={browser})."
         )
+
+    if ci_mode:
+        logger.info("CI mode: killing server by requesting /die")
+        import requests
+        try:
+            requests.get(f"{base_url.rstrip('/')}/die")
+        except Exception:
+            pass
 
     return session_id

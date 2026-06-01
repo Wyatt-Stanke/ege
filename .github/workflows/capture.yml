@@ -92,7 +92,6 @@ jobs:
               --bind 127.0.0.1 \
               --out ./captures \
               --cert-dir ./certs \
-              --ci-mode \
               --log-level WARNING > server.log 2>&1 &
           echo $! > server.pid
 
@@ -128,7 +127,7 @@ jobs:
         id: capture
         shell: bash
         run: |
-          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures"
+          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures --ci-mode"
           if [[ "${{ matrix.mode }}" == "xvfb" ]]; then
             HARNESS_ARGS="$HARNESS_ARGS --xvfb"
           elif [[ "${{ matrix.mode }}" == "headless" ]]; then

@@ -288,6 +288,9 @@ def _handle_main(req: Request, session_store: SessionStore) -> Response:
             headers=[("content-type", "text/css")],
             body=b"",
         )
+    
+    if method == "GET" and path == "/die":
+        raise KeyboardInterrupt("Server done (triggered /die)")
 
     return Response(status=404, headers=[("content-type", "text/plain")], body=b"Not Found")
 
