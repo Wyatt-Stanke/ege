@@ -20,18 +20,13 @@ on:
         description: >
           Browser version to capture, e.g. "130", "130.0.6723.69", "beta", "dev", "canary".
           Leave blank or "stable" for the runner default. Only applies when browser is set.
+          Comma-separated values are accepted to run multiple versions in parallel (e.g. "130,131,132").
         required: false
         default: 'stable'
       os:
-        description: 'Runner OS (leave blank to use the default for the selected browser)'
+        description: 'Runner OS. Comma-separated values accepted (e.g. "ubuntu-24.04,macos-15,windows-2025"). Leave blank for browser default.'
         required: false
         default: ''
-        type: choice
-        options:
-          - ''
-          - ubuntu-24.04
-          - macos-15
-          - windows-2025
       mode:
         description: 'Run mode (leave blank to use the default for the selected browser+os)'
         required: false
@@ -78,23 +73,51 @@ jobs:
               {"os": "windows-2025",  "browser": "edge",    "mode": "headless",  "browser_version": "stable"},
           ]
 
-          # Default OS and mode per browser when not explicitly specified
+          # Mapping matrix to determine the execution mode based on the targeted OS + Browser combination
+          MODE_DEFAULTS = {
+              ("ubuntu-24.04", "chrome"): "xvfb",
+              ("ubuntu-24.04", "firefox"): "headless",
+              ("macos-15", "safari"): "headed",
+          }
+          
+          # Single fallback defaults if no OS is provided at all
           BROWSER_DEFAULTS = {
               "chrome":  {"os": "ubuntu-24.04", "mode": "xvfb"},
               "firefox": {"os": "ubuntu-24.04", "mode": "headless"},
               "edge":    {"os": "windows-2025", "mode": "headless"},
-              "safari":  {"os": "macos-15",     "mode": "headed"},
+              "safari":  {"os": "macos-15",      "mode": "headed"},
           }
 
           if browser:
-              defaults = BROWSER_DEFAULTS.get(browser, {"os": "ubuntu-24.04", "mode": "headless"})
-              entry = {
-                  "os":              override_os   or defaults["os"],
-                  "browser":         browser,
-                  "mode":            override_mode or defaults["mode"],
-                  "browser_version": browser_version,
-              }
-              matrix = {"include": [entry]}
+              # Parse inputs into lists
+              versions = [v.strip() for v in browser_version.split(",") if v.strip()]
+              
+              if override_os:
+                  target_oses = [o.strip() for o in override_os.split(",") if o.strip()]
+              else:
+                  # Fallback to the default single OS for this browser
+                  browser_fallback = BROWSER_DEFAULTS.get(browser, {"os": "ubuntu-24.04", "mode": "headless"})
+                  target_oses = [browser_fallback["os"]]
+
+              include_entries = []
+              
+              # Loop through every combination of OS and Version
+              for target_os in target_oses:
+                  for version in versions:
+                      # Determine mode: 
+                      # 1. User global mode override takes highest priority
+                      # 2. Specific OS+Browser mapping matches second
+                      # 3. Default fallback to "headless"
+                      resolved_mode = override_mode or MODE_DEFAULTS.get((target_os, browser), "headless")
+                      
+                      include_entries.append({
+                          "os":              target_os,
+                          "browser":         browser,
+                          "mode":            resolved_mode,
+                          "browser_version": version,
+                      })
+                      
+              matrix = {"include": include_entries}
           else:
               matrix = {"include": DEFAULT_MATRIX}
 
