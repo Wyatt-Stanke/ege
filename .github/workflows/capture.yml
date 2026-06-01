@@ -17,27 +17,27 @@ jobs:
           - os: ubuntu-24.04
             browser: chrome
             mode: xvfb
-          # - os: ubuntu-24.04
-          #   browser: firefox
-          #   mode: headless
-          # - os: macos-15
-          #   browser: chrome
-          #   mode: headless
-          # - os: macos-15
-          #   browser: firefox
-          #   mode: headless
-          # - os: macos-15
-          #   browser: safari
-          #   mode: headed   # Safari has no headless mode
-          # - os: windows-2025
-          #   browser: chrome
-          #   mode: headless
-          # - os: windows-2025
-          #   browser: firefox
-          #   mode: headless
-          # - os: windows-2025
-          #   browser: edge
-          #   mode: headless
+          - os: ubuntu-24.04
+            browser: firefox
+            mode: headless
+          - os: macos-15
+            browser: chrome
+            mode: headless
+          - os: macos-15
+            browser: firefox
+            mode: headless
+          - os: macos-15
+            browser: safari
+            mode: headed   # Safari has no headless mode
+          - os: windows-2025
+            browser: chrome
+            mode: headless
+          - os: windows-2025
+            browser: firefox
+            mode: headless
+          - os: windows-2025
+            browser: edge
+            mode: headless
 
     runs-on: ${{ matrix.os }}
 
