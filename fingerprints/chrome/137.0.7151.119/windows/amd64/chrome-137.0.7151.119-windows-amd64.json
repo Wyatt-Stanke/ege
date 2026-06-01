@@ -1,0 +1,413 @@
+{
+  "captured_at": "2026-06-01T23:59:22.956204+00:00",
+  "config": {
+    "_comment": "Declarative config in curl-impersonate-compatible vocabulary",
+    "alpn": "h2,http/1.1",
+    "application_settings": true,
+    "cert_compression": "brotli",
+    "ciphers": "TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:TLS_RSA_WITH_AES_128_GCM_SHA256:TLS_RSA_WITH_AES_256_GCM_SHA384:TLS_RSA_WITH_AES_128_CBC_SHA:TLS_RSA_WITH_AES_256_CBC_SHA",
+    "compress_certificate": true,
+    "curves": "X25519MLKEM768:x25519:secp256r1:secp384r1",
+    "ec_point_formats": "0",
+    "extended_master_secret": true,
+    "http2_pseudo_headers_order": "m,a,s,p",
+    "http2_settings": "1:65536;2:0;4:6291456;6:262144;10986:2075098072",
+    "http2_stream_weight": null,
+    "http2_window_update": 15663105,
+    "key_share_curves": "X25519MLKEM768:x25519",
+    "record_size_limit": null,
+    "session_ticket": true,
+    "sig_hashes": "ecdsa_secp256r1_sha256,rsa_pss_rsae_sha256,rsa_pkcs1_sha256,ecdsa_secp384r1_sha384,rsa_pss_rsae_sha384,rsa_pkcs1_sha384,rsa_pss_rsae_sha512,rsa_pkcs1_sha512",
+    "tls_extension_order": null,
+    "tls_grease": true,
+    "tls_permute_extensions": true
+  },
+  "fingerprints": {
+    "akamai_h2": "1:65536;2:0;4:6291456;6:262144;10986:2075098072|15663105|0|m,a,s,p",
+    "akamai_h2_hash": "34e35826975a7b4e138e046ccac6129b",
+    "ja3": "771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-5-23-17613-65281-0-65037-43-10-13-16-11-45-51-27-18,4588-29-23-24,0",
+    "ja3_hash": "5c2e8b8e5b857b46d29a8a44225924f9",
+    "ja4": "t13d1516h2_8daaf6152771_d8a2da3f94cd",
+    "ja4_r": "t13d1516h2_002f,0035,009c,009d,1301,1302,1303,c013,c014,c02b,c02c,c02f,c030,cca8,cca9_0005,000a,000b,000d,0012,0017,001b,0023,002b,002d,0033,44cd,fe0d,ff01_0403,0804,0401,0503,0805,0501,0806,0601",
+    "peetprint": {
+      "ALPN": [
+        "h2",
+        "http/1.1"
+      ],
+      "ALPS": true,
+      "CertCompression": [
+        "brotli"
+      ],
+      "Ciphers": [
+        "0x8a8a",
+        "0x1301",
+        "0x1302",
+        "0x1303",
+        "0xc02b",
+        "0xc02f",
+        "0xc02c",
+        "0xc030",
+        "0xcca9",
+        "0xcca8",
+        "0xc013",
+        "0xc014",
+        "0x009c",
+        "0x009d",
+        "0x002f",
+        "0x0035"
+      ],
+      "EllipticCurvePointFormats": [
+        0
+      ],
+      "EllipticCurves": [
+        "0x1a1a",
+        "0x11ec",
+        "0x001d",
+        "0x0017",
+        "0x0018"
+      ],
+      "EncryptedClientHello": true,
+      "ExtendedMasterSecret": true,
+      "Extensions": [
+        "0x7a7a",
+        "0x0023",
+        "0x0005",
+        "0x0017",
+        "0x44cd",
+        "0xff01",
+        "0x0000",
+        "0xfe0d",
+        "0x002b",
+        "0x000a",
+        "0x000d",
+        "0x0010",
+        "0x000b",
+        "0x002d",
+        "0x0033",
+        "0x001b",
+        "0x0012",
+        "0x0a0a"
+      ],
+      "KeyShareCurves": [
+        "0x1a1a",
+        "0x11ec",
+        "0x001d"
+      ],
+      "PSKKeyExchangeModes": [
+        1
+      ],
+      "Padding": false,
+      "RecordSizeLimit": null,
+      "RenegotiationInfo": true,
+      "SessionTicket": true,
+      "SignatureAlgorithms": [
+        "0x0403",
+        "0x0804",
+        "0x0401",
+        "0x0503",
+        "0x0805",
+        "0x0501",
+        "0x0806",
+        "0x0601"
+      ],
+      "SupportedVersions": [
+        "0x0a0a",
+        "0x0304",
+        "0x0303"
+      ],
+      "TLSVersion": "0x0303"
+    }
+  },
+  "http2": {
+    "initial_window_update_increment": 15663105,
+    "priority_frames": [],
+    "pseudo_header_order": [
+      "m",
+      "a",
+      "s",
+      "p"
+    ],
+    "request_header_order_sample": [
+      "sec-ch-ua",
+      "sec-ch-ua-mobile",
+      "sec-ch-ua-platform",
+      "accept-language",
+      "upgrade-insecure-requests",
+      "user-agent",
+      "accept",
+      "sec-fetch-site",
+      "sec-fetch-mode",
+      "sec-fetch-user",
+      "sec-fetch-dest",
+      "accept-encoding",
+      "priority"
+    ],
+    "settings": [
+      [
+        "HEADER_TABLE_SIZE",
+        65536
+      ],
+      [
+        "ENABLE_PUSH",
+        0
+      ],
+      [
+        "INITIAL_WINDOW_SIZE",
+        6291456
+      ],
+      [
+        "MAX_HEADER_LIST_SIZE",
+        262144
+      ],
+      [
+        "unknown_0x2aea",
+        2075098072
+      ]
+    ],
+    "uses_extensible_priorities": false
+  },
+  "raw": {
+    "client_hello_hex": "16030106fa010006f60303d266248509ad3b4cc228d3cdc98296c25c963af7bf551c9b0145402b07c2a17d20c64db148de28927354088ed48ae7e8a28bc985e70118e239477bf3c00fc6c23e00208a8a130113021303c02bc02fc02cc030cca9cca8c013c014009c009d002f00350100068d7a7a0000002300000005000501000000000017000044cd00050003026832ff01000100000000160014000011636170747572652e6c6f63616c686f7374fe0d00fa00000100015700206f079d999163b6c49df7210ac5e4e1ff40aef52eff128b64aa5a3311d1a02d7b00d06a14a15ea468d88c5c294212bcc9ac8f33422a9ebcd8b5b9ba9dfeab40abee1d6c39627e7829f351c36eb1a4a19800cba5af21c9cbb290f934473eec75e84041565ea3316d081a2cff3d6978a7a3de4834ab64acc361feb3758f19dbbfc8523bcfe6effb97442ea6f71dffb3b662363da41cd59f21c753fdbb487ec15db5e33b6bd6d350c1b3166cbd0e369907676ea641f9903348b4f64a317f226055835146841f9ace9874dd3ca52c6d41641eecb6bd7eb4dbfe48ea276e83d665106a2f4695323091d29bf2e0a1f5b8ba64c143f9002b0007060a0a03040303000a000c000a1a1a11ec001d00170018000d00120010040308040401050308050501080606010010000e000c02683208687474702f312e31000b00020100002d00020101003304ef04ed1a1a00010011ec04c0a0f21f52322091e213b6519cdcc309f8c9b7e760c5e9d7afc51147bc6b7eaa73b18a8c1959689b9c9b601fac1a42915a359a94559189cc8aaed289c064929c20d8971087a9ca64984b0689ac2989629a0337001d794418ef188b41d591414ca605458198f5766ad39c68f9c44e3b2de1c34937e7101e6bcc74b90ac03c5eb26c7bbad7ca97596e969c5c9c72875557742d2897fb35597bf58de8e1bf084564506709204353b274bbc65a8055249a48419eaa615eae1272c3f2620ab36ecfa99b7348bb604847fb87150fc3ca7ab38002e742a8c68e3bfb0cb1627be1a79b11c07c6cec8006736701716b407133a305c7871553c02a27cdfcc41407b869173a1f0790292509c9505fcbb96f19f535e7a04f1bf73476953cce60a803b7240e957c9ddb38954c925312a1dd970600571673fba10906044176ca3be3a84bc3b6eaf69197f8a9b97a250d70743a7a01a3e2a82aab54246b260e73a51a601395db0652a537ff2a969838041791cac97b2470193190b5606b20a638715ccbb225f7681a1b905d3882b0cb7169d18990e13642a1864267d60ca91560efd47668a122c7facd01319886686da0c329b1cc5fb308661325a52e241f23a1ac581a0be0fa05f3543d06e39dfab5c682252fc3f1665b363ebe1047ec090075e8a26ff635b7f806f2cbc5819b2825e8c7dea3be0bf58174744164da410d182917a0c38a62bab32a70d8754fac4c4b636a750b82291411639501becda69e51288c718323a808557ab8a996e31b7a6648235b4e49c59256626b8fd9c706a90a3af33681723e43b438552c7cee3497f588730b11a1ec949bf386275036448d0cca7b4a8e0aac6ed5c3cfc5162523945ac15223dac14367ca6494901153a8383d828362e99276286deb6a5f8fd2cb1569c28e590cf0c49176eb53835ac8df79156fa586e018ab1540af18c86f25499c8fd521fc59b5789c92c6193442803aff92a67ec2c34558bc876992585446c00220b6046eeae14234277661c0a5a9212cc3500f3cd95a88a3b4f32a91f4786bc1222c63636dc5a14091f92225e9172227164162294c7768076b04a382c5719780c611387594a741c45ec87c7a063c963704b722132f19c24ed0a2c1095c6fcd3aa65e9c1d9b661eb36b32d767173ad51737f20ca8269289a44f58582ec1950f0eeb9a24cc93d7d533f6503cb1c62e76507bf47a2d7f6520fbb629f5b786e09a212c6412eff4643724a59a3c83e1b92296209e2787515591682619c1bda81220158df298b26c68c92cb92b23770a73e526b6a42fc806b8fc9706e3cc479b68456e96c1cc7c0c41d8b4085923c181210eda2968b3665e60c1b31a164197a4d8f77ef56acb184756b44cab79118835c09d47b63d5653417758cad556377beb812bf2a0391167788ab2db683f3909274c9c8b7a5bab81043345b83d142b93f940103036319a4c8aa654a706846bada61febbc44b30a447fb70e33146379102a70a89aac1a956cb63437e56a81d737ea9733e5f55c64a6c267c238c113a0baea14dc5bc8a0cac79ff76f21064779d07efbc62d7099cb9bd5caebb99a2e2c061739411a040aec2c9504592de9e3bf83a521c0b7347be092155505574c35e9f66eda078729857f5b0a551b49e79a67feea03dd29c046b0e5070b235c93720d34579fe458a70b68352aa4c84ff8fa2bfcafafe62a0e0731ed066107dc3044001d0020d725dd2892d59fed6797ccbc719fe3ef237e713145ed8ae8f598503e07894a50001b0003020002001200000a0a000100",
+    "client_hello_sha256": "e2a0446f6cf2c018aca46a6b46079469aefa5ccfbe3be4ac3c659c6eaa86090d",
+    "first_headers_frame_hex": "0001dd01250000000180000000ff82419020eb4db6157a0e41d139d09b8f34d33f87049f63fc41a48241bed492be1599201959a005e586d8db584c95b9250b6e0da73f40874148b1275ad1ffa3fe6f4f61e935b4ff3f7de0fe42cbbfcfd29fce93a5887fbbb60ea93f9fbef07f226bf9408b4148b1275ad1ad49e33505023f30408d4148b1275ad1ad5d034ca7b29f88fe791aa90fe11fcf518b2d4b70ddf45abefb4005df4092b6b9ac1c8558d520a4b6c2ad617b5a54251f01317adbd07f66a281b0dae053fae46aa43f8429a77a8102e0fb5391aa71afb53cb8d7f6a435d74179163cc64b0db2eaecb8a7f59b1efd19fe94a0dd4aa62293a9ffb5319472505422f4f61e92b0165d5c0b817029b8728ec330db2eaecb9f53e5497ca589d34d1f43aeba0c41a4c7a98f33a69a3fdf9a68fa1d75d0620d263d4c79a68fbed00177fe8d48e62b03ee697e8d48e62b1e0b1d7f46a4731581d754df5f2c7cfdf6800bbdf43aeba0c41a4c7a9841a6a8b22c5f249c754c5fbef046cfdf6800bbbf408a4148b4a549275906497f83a8f517408a4148b4a549275a93c85f86a87dcd30d25f408a4148b4a549275ad416cf023f31408a4148b4a549275a42a13f8690e4b692d49f50929bd9abfa5242cb40d25fa523b3e94f684c9f4086aec31ec327d785b6007d286f",
+    "first_settings_frame_hex": "00001e0400000000000001000100000002000000000004006000000006000400002aea7baf7bd8"
+  },
+  "schema_version": 1,
+  "session_id": "da94df91-3c03-4018-a5a5-23e5df156a46",
+  "source": {
+    "navigator": {
+      "deviceMemory": 8,
+      "hardwareConcurrency": 4,
+      "language": "en-US",
+      "languages": [
+        "en-US"
+      ],
+      "vendor": "Google Inc."
+    },
+    "report_present": true,
+    "ua_client_hints": {
+      "architecture": "x86",
+      "bitness": "64",
+      "brands": [
+        {
+          "brand": "Chromium",
+          "version": "137"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "24"
+        }
+      ],
+      "fullVersionList": [
+        {
+          "brand": "Chromium",
+          "version": "137.0.7151.119"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "24.0.0.0"
+        }
+      ],
+      "mobile": false,
+      "model": "",
+      "platform": "Windows",
+      "platformVersion": "19.0.0"
+    },
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/137.0.0.0 Safari/537.36"
+  },
+  "tls": {
+    "alpn": {
+      "list": [
+        "h2",
+        "http/1.1"
+      ]
+    },
+    "alpn_selected": "h2",
+    "application_settings_present": true,
+    "canonical_conn": "0003",
+    "cert_compression_algorithms": {
+      "list": [
+        2
+      ],
+      "list_named": [
+        "brotli"
+      ]
+    },
+    "ciphers": {
+      "grease_positions": [
+        0
+      ],
+      "list": [
+        "0x8a8a",
+        "0x1301",
+        "0x1302",
+        "0x1303",
+        "0xc02b",
+        "0xc02f",
+        "0xc02c",
+        "0xc030",
+        "0xcca9",
+        "0xcca8",
+        "0xc013",
+        "0xc014",
+        "0x009c",
+        "0x009d",
+        "0x002f",
+        "0x0035"
+      ],
+      "list_named": [
+        "unknown_0x8a8a",
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+        "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+        "TLS_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_RSA_WITH_AES_256_GCM_SHA384",
+        "TLS_RSA_WITH_AES_128_CBC_SHA",
+        "TLS_RSA_WITH_AES_256_CBC_SHA"
+      ]
+    },
+    "client_hello_version": "0x0303",
+    "compress_certificate_present": true,
+    "ec_point_formats": {
+      "list": [
+        0
+      ]
+    },
+    "encrypted_client_hello_present": true,
+    "extended_master_secret_present": true,
+    "extensions": {
+      "grease_positions": [
+        0,
+        17
+      ],
+      "list": [
+        "0x7a7a",
+        "0x0023",
+        "0x0005",
+        "0x0017",
+        "0x44cd",
+        "0xff01",
+        "0x0000",
+        "0xfe0d",
+        "0x002b",
+        "0x000a",
+        "0x000d",
+        "0x0010",
+        "0x000b",
+        "0x002d",
+        "0x0033",
+        "0x001b",
+        "0x0012",
+        "0x0a0a"
+      ],
+      "list_named": [
+        "unknown_0x7a7a",
+        "session_ticket",
+        "status_request",
+        "extended_master_secret",
+        "application_settings",
+        "renegotiation_info",
+        "server_name",
+        "encrypted_client_hello",
+        "supported_versions",
+        "supported_groups",
+        "signature_algorithms",
+        "application_layer_protocol_negotiation",
+        "ec_point_formats",
+        "psk_key_exchange_modes",
+        "key_share",
+        "compress_certificate",
+        "signed_certificate_timestamp",
+        "unknown_0x0a0a"
+      ],
+      "order": "permuted",
+      "permuted_seen_orders": 1
+    },
+    "key_share_groups": {
+      "grease_positions": [
+        0
+      ],
+      "list": [
+        "0x1a1a",
+        "0x11ec",
+        "0x001d"
+      ],
+      "list_named": [
+        "unknown_0x1a1a",
+        "X25519MLKEM768",
+        "x25519"
+      ]
+    },
+    "negotiated_version": "TLSv1.3",
+    "padding_present": false,
+    "psk_key_exchange_modes": {
+      "list": [
+        1
+      ]
+    },
+    "record_size_limit": null,
+    "record_version": "0x0301",
+    "renegotiation_info_present": true,
+    "session_ticket_present": true,
+    "signature_algorithms": {
+      "list": [
+        "0x0403",
+        "0x0804",
+        "0x0401",
+        "0x0503",
+        "0x0805",
+        "0x0501",
+        "0x0806",
+        "0x0601"
+      ],
+      "list_named": [
+        "ecdsa_secp256r1_sha256",
+        "rsa_pss_rsae_sha256",
+        "rsa_pkcs1_sha256",
+        "ecdsa_secp384r1_sha384",
+        "rsa_pss_rsae_sha384",
+        "rsa_pkcs1_sha384",
+        "rsa_pss_rsae_sha512",
+        "rsa_pkcs1_sha512"
+      ]
+    },
+    "sni": "capture.localhost",
+    "supported_groups": {
+      "grease_positions": [
+        0
+      ],
+      "list": [
+        "0x1a1a",
+        "0x11ec",
+        "0x001d",
+        "0x0017",
+        "0x0018"
+      ],
+      "list_named": [
+        "unknown_0x1a1a",
+        "X25519MLKEM768",
+        "x25519",
+        "secp256r1",
+        "secp384r1"
+      ]
+    },
+    "supported_versions": {
+      "grease_positions": [
+        0
+      ],
+      "list": [
+        "0x0a0a",
+        "0x0304",
+        "0x0303"
+      ]
+    }
+  }
+}
