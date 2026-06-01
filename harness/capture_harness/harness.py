@@ -175,7 +175,10 @@ def run_harness(
     if ci_mode:
         logger.info("CI mode: killing server by requesting /die")
         import requests
-        requests.get(f"{base_url.rstrip('/')}/die")
+        try:
+            requests.get(f"{base_url.rstrip('/')}/die")
+        except requests.exceptions.SSLError:
+            pass
         time.sleep(3)
 
     return session_id
