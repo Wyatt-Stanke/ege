@@ -29,14 +29,16 @@
 
     // Ensure we have a session cookie before starting probes
     if (!CFG.sessionId) {
-        try {
-            await fetch("/", { credentials: "include" });
-            CFG.sessionId = getCookie("__capture_sid");
-        } catch (_) { }
+        const session = await (await fetch("/session", { credentials: "include" })).json();
+        if (!session["session_id"]) {
+            setStatus("Error: could not obtain session ID" + session);
+            return;
+        }
+        CFG.sessionId = session["session_id"];
     }
 
     const sid = CFG.sessionId;
-    const sidParam = sid ? "?sid=" + encodeURIComponent(sid) : "";
+    const sidParam = "?sid=" + encodeURIComponent(sid);
 
     const probesRun = [];
     const probesFailed = [];
@@ -91,7 +93,7 @@
     await runProbe("post_form", () =>
         fetch("/probe/post-form" + sidParam, {
             method: "POST",
-            body: new URLSearchParams({ probe: "post_form", sid: sid || "" }),
+            body: new URLSearchParams({ probe: "post_form", sid }),
         })
     );
 

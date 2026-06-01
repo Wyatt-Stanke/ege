@@ -121,6 +121,7 @@ def resolve_session(
     if host_label in ("capture", "localhost") and method == "GET" and path in (
         "/",
         "/payload.js",
+        "/session",
     ):
         state = session_store.new_session()
         return state.id, True
@@ -214,6 +215,17 @@ def _handle_main(req: Request, session_store: SessionStore) -> Response:
             headers=[("content-type", "text/html; charset=utf-8")],
             body=body,
         )
+    
+    if method == "GET" and path == "/session":
+        if req.session_id:
+            return Response(
+                status=200,
+                headers=[("content-type", "application/json")],
+                body=json.dumps({
+                    "session_id": req.session_id,
+                }).encode(),
+            )
+        return Response(status=404, headers=[("content-type", "text/plain")], body=b"Session not found")
 
     if method == "GET" and path == "/payload.js":
         body = _read_static("payload.js")

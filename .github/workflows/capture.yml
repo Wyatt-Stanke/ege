@@ -92,6 +92,7 @@ jobs:
               --bind 127.0.0.1 \
               --out ./captures \
               --cert-dir ./certs \
+              --ci-mode \
               --log-level WARNING > server.log 2>&1 &
           echo $! > server.pid
 
@@ -135,6 +136,24 @@ jobs:
           fi
           SID=$(python -m capture_harness $HARNESS_ARGS)
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for server to finish processing
+        shell: bash
+        run: |
+          # Wait up to 30 seconds for the server to exit on its own (CI mode)
+          FINISHED=0
+          for i in {1..30}; do
+            if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
+              echo "Server has exited."
+              FINISHED=1
+              break
+            fi
+            sleep 1
+          done
+          if [ $FINISHED -eq 0 ]; then
+            echo "Server failed to exit within 30 seconds"
+            exit 1
+          fi
 
       - name: Stop server
         if: always()
