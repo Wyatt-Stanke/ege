@@ -1,0 +1,5 @@
+.venv/
+captures/
+fingerprints/
+.pytest_cache/
+*.pyc

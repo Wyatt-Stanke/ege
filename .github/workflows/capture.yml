@@ -1,0 +1,202 @@
+name: capture-fingerprints
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # weekly Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to push fingerprint commits
+
+jobs:
+  capture:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            browser: chrome
+            mode: xvfb
+        #   - os: ubuntu-24.04
+        #     browser: firefox
+        #     mode: headless
+        #   - os: macos-15
+        #     browser: chrome
+        #     mode: headless
+        #   - os: macos-15
+        #     browser: firefox
+        #     mode: headless
+        #   - os: macos-15
+        #     browser: safari
+        #     mode: headed   # Safari has no headless mode
+        #   - os: windows-2025
+        #     browser: chrome
+        #     mode: headless
+        #   - os: windows-2025
+        #     browser: firefox
+        #     mode: headless
+        #   - os: windows-2025
+        #     browser: edge
+        #     mode: headless
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set PYTHONPATH (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE/server:$GITHUB_WORKSPACE/parser:$GITHUB_WORKSPACE/harness" \
+              >> "$GITHUB_ENV"
+
+      - name: Set PYTHONPATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $paths = "$env:GITHUB_WORKSPACE\server;$env:GITHUB_WORKSPACE\parser;$env:GITHUB_WORKSPACE\harness"
+          "PYTHONPATH=$paths" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pip install -r server/requirements.txt
+          pip install -r parser/requirements.txt
+          pip install -r harness/requirements.txt
+
+      - name: Configure /etc/hosts (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          echo "127.0.0.1 capture.localhost api.localhost cdn.localhost ws.localhost" \
+              | sudo tee -a /etc/hosts
+
+      - name: Configure hosts (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Add-Content `
+            -Path "$env:SystemRoot\System32\drivers\etc\hosts" `
+            -Value "127.0.0.1 capture.localhost api.localhost cdn.localhost ws.localhost"
+
+      - name: Start capture server
+        shell: bash
+        run: |
+          python -m capture_server \
+              --port 8443 \
+              --bind 127.0.0.1 \
+              --out ./captures \
+              --cert-dir ./certs \
+              --log-level WARNING &
+          echo $! > server.pid
+
+          python - << 'EOF'
+          import ssl, socket, time, sys
+          deadline = time.monotonic() + 15
+          while time.monotonic() < deadline:
+              try:
+                  ctx = ssl.create_default_context()
+                  ctx.check_hostname = False
+                  ctx.verify_mode = ssl.CERT_NONE
+                  with socket.create_connection(("127.0.0.1", 8443), timeout=1) as s:
+                      with ctx.wrap_socket(s):
+                          pass
+                  print("Server ready.", file=sys.stderr)
+                  sys.exit(0)
+              except Exception:
+                  time.sleep(0.3)
+          print("Server did not start in time.", file=sys.stderr)
+          sys.exit(1)
+          EOF
+
+      - name: Trust cert and enable safaridriver (Safari only)
+        if: matrix.browser == 'safari'
+        shell: bash
+        run: |
+          sudo security add-trusted-cert -d -r trustRoot \
+              -k /Library/Keychains/System.keychain \
+              ./certs/cert.pem
+          safaridriver --enable
+
+      - name: Run harness
+        id: capture
+        shell: bash
+        run: |
+          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures"
+          if [[ "${{ matrix.mode }}" == "xvfb" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --xvfb"
+          elif [[ "${{ matrix.mode }}" == "headless" ]]; then
+            HARNESS_ARGS="$HARNESS_ARGS --headless"
+          fi
+          SID=$(python -m capture_harness $HARNESS_ARGS)
+          echo "session_id=$SID" >> "$GITHUB_OUTPUT"
+
+      - name: Stop server
+        if: always()
+        shell: bash
+        run: kill "$(cat server.pid)" 2>/dev/null || true
+
+      - name: Parse capture
+        shell: bash
+        run: |
+          python -m capture_parser \
+              "./captures/${{ steps.capture.outputs.session_id }}" \
+              --out ./fingerprints
+
+      - name: Name and commit fingerprint
+        shell: bash
+        env:
+          SESSION_ID: ${{ steps.capture.outputs.session_id }}
+        run: |
+          python - << 'PYEOF'
+          import json, os, re, shutil
+          from pathlib import Path
+
+          sid = os.environ["SESSION_ID"]
+          h = json.loads(Path(f"captures/{sid}/harness.json").read_text())
+
+          slug = re.sub(
+              r"[^a-z0-9._-]", "_",
+              "{browser}-{version}-{system}-{machine}".format(
+                  browser=h["browser"],
+                  version=h["browser_version"],
+                  system=h["platform"]["system"].lower(),
+                  machine=h["platform"]["machine"].lower(),
+              ),
+          )
+
+          Path("fingerprints").mkdir(exist_ok=True)
+
+          src = Path(f"fingerprints/{sid}.json")
+          if src.exists():
+              shutil.copy(src, f"fingerprints/{slug}.json")
+
+          vsrc = Path(f"fingerprints/{sid}.variation.json")
+          if vsrc.exists():
+              shutil.copy(vsrc, f"fingerprints/{slug}.variation.json")
+
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"FP_SLUG={slug}\n")
+
+          print(f"Fingerprint slug: {slug}", flush=True)
+          PYEOF
+
+          git config user.email "fingerprint-bot@ege"
+          git config user.name "fingerprint-bot"
+          git add "fingerprints/${FP_SLUG}.json" \
+                  "fingerprints/${FP_SLUG}.variation.json" 2>/dev/null || true
+          git diff --staged --quiet && echo "Nothing new to commit." && exit 0
+          git commit -m "fingerprint: ${FP_SLUG}"
+
+          # Push with rebase-retry to tolerate concurrent matrix job pushes
+          for i in 1 2 3 4 5 6 7 8; do
+            git fetch origin main
+            git rebase origin/main && git push origin HEAD:main && break
+            echo "Push attempt $i failed, retrying in $((i * 3)) seconds"
+            sleep $((i * 3))
+          done
