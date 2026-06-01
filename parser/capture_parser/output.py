@@ -6,9 +6,9 @@ from .tls.clienthello import build_tls_info
 from .tls.registry import name_h2_setting
 from .h2.frames import H2Info
 from .h2.akamai import build_akamai_string, akamai_hash
-from .fingerprints.ja3 import compute_ja3
-from .fingerprints.ja4 import compute_ja4
-from .fingerprints.peetprint import compute_peetprint
+from .fingerprint.ja3 import compute_ja3
+from .fingerprint.ja4 import compute_ja4
+from .fingerprint.peetprint import compute_peetprint
 from .config import build_config
 
 
