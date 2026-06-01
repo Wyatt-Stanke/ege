@@ -6,7 +6,7 @@
   "canonical_conn": "0002",
   "conn_count": 5,
   "schema_version": 1,
-  "session_id": "7a9b0803-2324-450e-bb42-2ff19eb4934a",
+  "session_id": "ba3bad7b-9fd9-4a81-9337-ecc53d358acc",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
@@ -16,22 +16,22 @@
     "extension_order": {
       "distinct_orders_seen": 4,
       "permuted_extensions_subset": [
-        "0x002d",
         "0x0023",
+        "0x001b",
+        "0x0017",
+        "0x000b",
+        "0x002d",
+        "0xff01",
+        "0x0012",
         "0xfe0d",
         "0x000d",
-        "0x001b",
-        "0x000a",
-        "0x0005",
-        "0xff01",
-        "0x0017",
         "0x0010",
         "0x0033",
-        "0x0012",
-        "0x002b",
         "0x44cd",
         "0x0000",
-        "0x000b"
+        "0x0005",
+        "0x000a",
+        "0x002b"
       ],
       "verdict": "permuted"
     },
