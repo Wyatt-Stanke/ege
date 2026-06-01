@@ -1,0 +1,15 @@
+{
+  "anomalies": [],
+  "canonical_conn": "0005",
+  "conn_count": 1,
+  "schema_version": 1,
+  "session_id": "107e6581-fcc8-40ee-b058-c7cccdcd3859",
+  "stable": [
+    "ciphers_multiset",
+    "extensions_multiset",
+    "supported_groups",
+    "signature_algorithms",
+    "alpn"
+  ],
+  "varied": {}
+}
