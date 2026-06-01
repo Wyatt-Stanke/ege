@@ -6,7 +6,7 @@ Walks all conn_NNNN parsed ClientHellos in a session, detects:
 - GREASE value rotation
 - Anomalies (unexpected config drift)
 """
-from collections import Counter
+from collections import Counter, defaultdict
 
 from .tls.records import ClientHello
 from .tls.grease import filter_grease, is_grease_u16
@@ -106,26 +106,26 @@ def analyze_variation(
 
     # --- Extension order permutation detection ---
     ext_orders = [tuple(_ext_type_list(ch, filter_g=True)) for _, ch in conns]
-    distinct_orders = len(set(ext_orders))
     canonical_ext_order = list(ext_orders[0]) if ext_orders else None
 
-    if distinct_orders >= 2:
-        # Multisets are the same but orders differ → Chrome permutation
-        permute_extensions = len(set(ext_sets)) == 1
-        if permute_extensions:
+    multiset_groups: dict = defaultdict(list)
+    for ms, order in zip(ext_sets, ext_orders):
+        multiset_groups[ms].append(order)
+
+    permute_extensions = False
+    for ms, orders in multiset_groups.items():
+        if len(orders) >= 2 and len(set(orders)) >= 2:
+            permute_extensions = True
+            distinct_orders = len(set(orders))
             varied["extension_order"] = {
                 "verdict": "permuted",
                 "distinct_orders_seen": distinct_orders,
                 "permuted_extensions_subset": [
-                    f"0x{v:04x}" for v in ext_orders[0]
+                    f"0x{v:04x}" for v in orders[0]
                 ],
             }
             canonical_ext_order = None
-        else:
-            permute_extensions = False
-            anomalies.append("extension_order_differs_with_different_multisets")
-    else:
-        permute_extensions = False
+            break
 
     # --- Key share group order ---
     ks_orders = [tuple(_ks_groups(ch)) for _, ch in conns]
