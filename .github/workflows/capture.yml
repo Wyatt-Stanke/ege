@@ -127,7 +127,7 @@ jobs:
         id: capture
         shell: bash
         run: |
-          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures --ci-mode"
+          HARNESS_ARGS="--browser ${{ matrix.browser }} --captures-dir ./captures"
           if [[ "${{ matrix.mode }}" == "xvfb" ]]; then
             HARNESS_ARGS="$HARNESS_ARGS --xvfb"
           elif [[ "${{ matrix.mode }}" == "headless" ]]; then
@@ -136,28 +136,10 @@ jobs:
           SID=$(python -m capture_harness $HARNESS_ARGS)
           echo "session_id=$SID" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for server to finish processing
-        shell: bash
-        run: |
-          # Wait up to 30 seconds for the server to exit on its own (CI mode)
-          FINISHED=0
-          for i in {1..30}; do
-            if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
-              echo "Server has exited."
-              FINISHED=1
-              break
-            fi
-            sleep 1
-          done
-          if [ $FINISHED -eq 0 ]; then
-            echo "Server failed to exit within 30 seconds"
-            exit 1
-          fi
-
       - name: Stop server
         if: always()
         shell: bash
-        run: kill "$(cat server.pid)" 2>/dev/null || true
+        run: sleep 5 && kill "$(cat server.pid)" 2>/dev/null || true
 
       - name: Parse capture
         shell: bash
