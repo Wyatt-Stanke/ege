@@ -90,7 +90,6 @@ def run_harness(
     started_at = _now_iso()
     exit_reason = "driver_error"
     ended_at = started_at
-    browser_version = "unknown"
     drv_version = "unknown"
     harness_mode = "headless_new" if headless else ("headed_xvfb" if use_xvfb else "headed")
 
