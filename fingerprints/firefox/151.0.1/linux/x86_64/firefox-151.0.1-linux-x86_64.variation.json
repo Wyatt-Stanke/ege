@@ -4,9 +4,9 @@
     "alpn_differs_across_conns"
   ],
   "canonical_conn": "0002",
-  "conn_count": 4,
+  "conn_count": 5,
   "schema_version": 1,
-  "session_id": "737e291f-64f4-4bd8-aac6-357002548d8d",
+  "session_id": "a9a7f3f0-6f45-4466-b384-41e11f9cf543",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
