@@ -1,0 +1,21 @@
+{
+  "anomalies": [
+    "extension_types_differ_unexpectedly:0x001b,0x0023",
+    "supported_groups_differ_across_conns"
+  ],
+  "canonical_conn": "0002",
+  "conn_count": 5,
+  "schema_version": 1,
+  "session_id": "0e6140f6-584c-4f71-9081-a63f416ef572",
+  "stable": [
+    "ciphers_multiset",
+    "signature_algorithms",
+    "extension_order"
+  ],
+  "varied": {
+    "key_share_group_order": {
+      "distinct_orders_seen": 2,
+      "verdict": "permuted"
+    }
+  }
+}
