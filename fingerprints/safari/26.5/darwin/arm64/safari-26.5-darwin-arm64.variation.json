@@ -3,13 +3,14 @@
   "canonical_conn": "0005",
   "conn_count": 1,
   "schema_version": 1,
-  "session_id": "043d7097-eedf-4dc9-82a1-f24fb3e82d69",
+  "session_id": "59e78925-24eb-4b4b-969e-9b0e6fa7ba15",
   "stable": [
     "ciphers_multiset",
-    "extensions_multiset",
+    "extensions_set",
     "supported_groups",
     "signature_algorithms",
-    "alpn"
+    "alpn",
+    "key_share_group_order"
   ],
   "varied": {}
 }
