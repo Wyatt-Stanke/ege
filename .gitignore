@@ -3,3 +3,4 @@ captures/
 parser/fingerprints/
 .pytest_cache/
 *.pyc
+node_modules
