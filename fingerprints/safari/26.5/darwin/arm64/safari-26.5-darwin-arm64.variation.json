@@ -3,7 +3,7 @@
   "canonical_conn": "0005",
   "conn_count": 1,
   "schema_version": 1,
-  "session_id": "5745e8bb-69dd-4169-91a7-5ffd65da4010",
+  "session_id": "43cce160-8fc6-4a1e-a625-aa4ede139b2a",
   "stable": [
     "ciphers_multiset",
     "extensions_set",
