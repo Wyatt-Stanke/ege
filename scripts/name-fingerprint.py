@@ -3,7 +3,6 @@ import os
 import re
 import shutil
 import sys
-from json import JSONDecodeError
 from pathlib import Path
 
 
@@ -17,7 +16,7 @@ def main() -> None:
         harness = json.loads(harness_path.read_text(encoding="utf-8"))
     except FileNotFoundError as error:
         raise SystemExit(f"Missing harness metadata: {harness_path}") from error
-    except JSONDecodeError as error:
+    except json.JSONDecodeError as error:
         raise SystemExit(f"Invalid harness metadata JSON: {harness_path}: {error}") from error
 
     browser = harness["browser"].lower()
