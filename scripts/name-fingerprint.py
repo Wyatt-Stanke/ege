@@ -8,6 +8,9 @@ from pathlib import Path
 
 
 def main() -> None:
+    if len(sys.argv) < 2:
+        raise SystemExit("Usage: python scripts/name-fingerprint.py <session_id>")
+
     session_id = sys.argv[1]
     harness_path = Path(f"captures/{session_id}/harness.json")
     try:
