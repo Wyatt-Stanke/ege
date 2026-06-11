@@ -56,76 +56,8 @@ jobs:
           INPUT_OS: ${{ inputs.os }}
           INPUT_MODE: ${{ inputs.mode }}
         run: |
-          import json, os
-
-          browser         = os.environ.get("INPUT_BROWSER", "").strip()
-          browser_version = os.environ.get("INPUT_BROWSER_VERSION", "stable").strip() or "stable"
-          override_os     = os.environ.get("INPUT_OS", "").strip()
-          override_mode   = os.environ.get("INPUT_MODE", "").strip()
-
-          DEFAULT_MATRIX = [
-              {"os": "ubuntu-24.04",  "browser": "chrome",  "mode": "xvfb",     "browser_version": "stable"},
-              {"os": "ubuntu-24.04",  "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
-              {"os": "macos-15",      "browser": "chrome",  "mode": "headless",  "browser_version": "stable"},
-              {"os": "macos-15",      "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
-              {"os": "macos-15",      "browser": "safari",  "mode": "headed",    "browser_version": "stable"},
-              {"os": "windows-2025",  "browser": "chrome",  "mode": "headless",  "browser_version": "stable"},
-              {"os": "windows-2025",  "browser": "firefox", "mode": "headless",  "browser_version": "stable"},
-              {"os": "windows-2025",  "browser": "edge",    "mode": "headless",  "browser_version": "stable"},
-          ]
-
-          # Mapping matrix to determine the execution mode based on the targeted OS + Browser combination
-          MODE_DEFAULTS = {
-              ("ubuntu-24.04", "chrome"): "xvfb",
-              ("ubuntu-24.04", "firefox"): "headless",
-              ("macos-15", "safari"): "headed",
-          }
-          
-          # Single fallback defaults if no OS is provided at all
-          BROWSER_DEFAULTS = {
-              "chrome":  {"os": "ubuntu-24.04", "mode": "xvfb"},
-              "firefox": {"os": "ubuntu-24.04", "mode": "headless"},
-              "edge":    {"os": "windows-2025", "mode": "headless"},
-              "safari":  {"os": "macos-15",      "mode": "headed"},
-          }
-
-          if browser:
-              # Parse inputs into lists
-              versions = [v.strip() for v in browser_version.split(",") if v.strip()]
-              
-              if override_os:
-                  target_oses = [o.strip() for o in override_os.split(",") if o.strip()]
-              else:
-                  # Fallback to the default single OS for this browser
-                  browser_fallback = BROWSER_DEFAULTS.get(browser, {"os": "ubuntu-24.04", "mode": "headless"})
-                  target_oses = [browser_fallback["os"]]
-
-              include_entries = []
-              
-              # Loop through every combination of OS and Version
-              for target_os in target_oses:
-                  for version in versions:
-                      # Determine mode: 
-                      # 1. User global mode override takes highest priority
-                      # 2. Specific OS+Browser mapping matches second
-                      # 3. Default fallback to "headless"
-                      resolved_mode = override_mode or MODE_DEFAULTS.get((target_os, browser), "headless")
-                      
-                      include_entries.append({
-                          "os":              target_os,
-                          "browser":         browser,
-                          "mode":            resolved_mode,
-                          "browser_version": version,
-                      })
-                      
-              matrix = {"include": include_entries}
-          else:
-              matrix = {"include": DEFAULT_MATRIX}
-
-          output = json.dumps(matrix)
-          print(f"matrix={output}")
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"matrix={output}\n")
+          from runpy import run_path
+          run_path("scripts/build-capture-matrix.py", run_name="__main__")
 
   capture:
     needs: setup_matrix
@@ -291,42 +223,7 @@ jobs:
         shell: bash
         env:
           SESSION_ID: ${{ steps.capture.outputs.session_id }}
-        run: |
-          python - << 'PYEOF'
-          import json, os, re, shutil
-          from pathlib import Path
-
-          sid = os.environ["SESSION_ID"]
-          h = json.loads(Path(f"captures/{sid}/harness.json").read_text())
-
-          browser = h["browser"].lower()
-          version = h["browser_version"]
-          system  = h["platform"]["system"].lower()
-          machine = h["platform"]["machine"].lower()
-
-          slug = re.sub(
-              r"[^a-z0-9._-]", "_",
-              f"{browser}-{version}-{system}-{machine}"
-          )
-
-          target_dir = Path("fingerprints") / browser / version / system / machine
-          target_dir.mkdir(parents=True, exist_ok=True)
-          dest_base = target_dir / slug
-
-          src = Path(f"fingerprints/{sid}.json")
-          if src.exists():
-              shutil.move(src, f"{dest_base}.json")
-
-          vsrc = Path(f"fingerprints/{sid}.variation.json")
-          if vsrc.exists():
-              shutil.move(vsrc, f"{dest_base}.variation.json")
-
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              f.write(f"FP_DIR={target_dir}\n")
-              f.write(f"FP_SLUG={slug}\n")
-
-          print(f"Fingerprint: {dest_base}", flush=True)
-          PYEOF
+        run: python scripts/name-fingerprint.py "$SESSION_ID"
 
       - name: Commit fingerprint
         shell: bash
