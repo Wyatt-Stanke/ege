@@ -1,10 +1,10 @@
+import json
 import os
 import re
 import shutil
 import sys
 from json import JSONDecodeError
 from pathlib import Path
-import json
 
 
 def main() -> None:
