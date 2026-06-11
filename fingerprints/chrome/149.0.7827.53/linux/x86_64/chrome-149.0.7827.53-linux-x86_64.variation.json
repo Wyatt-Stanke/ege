@@ -1,0 +1,76 @@
+{
+  "anomalies": [
+    "extension_types_differ_unexpectedly:0x44cd"
+  ],
+  "canonical_conn": "0002",
+  "conn_count": 5,
+  "schema_version": 1,
+  "session_id": "8e90af98-c132-4eba-97fb-58c2e5a1766c",
+  "stable": [
+    "ciphers_multiset",
+    "supported_groups",
+    "signature_algorithms",
+    "key_share_group_order"
+  ],
+  "varied": {
+    "extension_order": {
+      "common_extension_count": 15,
+      "compared_connections": 5,
+      "distinct_orders_seen": 5,
+      "sample_orders": [
+        [
+          "0x000b",
+          "0x0033",
+          "0x001b",
+          "0x0010",
+          "0x0023",
+          "0x002b",
+          "0x000d",
+          "0xfe0d",
+          "0x0012",
+          "0x0000",
+          "0xff01",
+          "0x0005",
+          "0x0017",
+          "0x002d",
+          "0x000a"
+        ],
+        [
+          "0x000d",
+          "0x000b",
+          "0xfe0d",
+          "0x0012",
+          "0x0017",
+          "0x0000",
+          "0xff01",
+          "0x0023",
+          "0x002d",
+          "0x002b",
+          "0x000a",
+          "0x0005",
+          "0x001b",
+          "0x0033",
+          "0x0010"
+        ],
+        [
+          "0x0017",
+          "0x000b",
+          "0x0012",
+          "0x001b",
+          "0x0033",
+          "0x0000",
+          "0xfe0d",
+          "0x000a",
+          "0x000d",
+          "0x002d",
+          "0x0010",
+          "0x0005",
+          "0xff01",
+          "0x002b",
+          "0x0023"
+        ]
+      ],
+      "verdict": "permuted"
+    }
+  }
+}
