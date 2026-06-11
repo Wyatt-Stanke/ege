@@ -19,10 +19,13 @@ def main() -> None:
     except json.JSONDecodeError as error:
         raise SystemExit(f"Invalid harness metadata JSON: {harness_path}: {error}") from error
 
-    browser = harness["browser"].lower()
-    version = harness["browser_version"]
-    system = harness["platform"]["system"].lower()
-    machine = harness["platform"]["machine"].lower()
+    try:
+        browser = harness["browser"].lower()
+        version = harness["browser_version"]
+        system = harness["platform"]["system"].lower()
+        machine = harness["platform"]["machine"].lower()
+    except KeyError as error:
+        raise SystemExit(f"Missing harness metadata field: {error.args[0]} in {harness_path}") from error
 
     slug = re.sub(r"[^a-z0-9._-]", "_", f"{browser}-{version}-{system}-{machine}")
     target_dir = Path("fingerprints") / browser / version / system / machine
@@ -37,7 +40,11 @@ def main() -> None:
     if variation_src.exists():
         shutil.move(variation_src, f"{dest_base}.variation.json")
 
-    with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as github_env:
+    github_env_path = os.environ.get("GITHUB_ENV")
+    if not github_env_path:
+        raise SystemExit("Missing GITHUB_ENV; this script must run in GitHub Actions.")
+
+    with open(github_env_path, "a", encoding="utf-8") as github_env:
         github_env.write(f"FP_DIR={target_dir}\n")
         github_env.write(f"FP_SLUG={slug}\n")
 
