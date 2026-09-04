@@ -3,9 +3,9 @@
     "extension_types_differ_unexpectedly:0x001b,0x0023"
   ],
   "canonical_conn": "0002",
-  "conn_count": 5,
+  "conn_count": 4,
   "schema_version": 1,
-  "session_id": "fe33f04d-b2ac-4a10-b410-5c3ec4baaee8",
+  "session_id": "fc7b6314-9497-4e16-9d00-ae699f62e042",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
