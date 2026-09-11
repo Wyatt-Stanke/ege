@@ -2,10 +2,10 @@
   "anomalies": [
     "extension_types_differ_unexpectedly:0x001b,0x0023"
   ],
-  "canonical_conn": "0003",
-  "conn_count": 5,
+  "canonical_conn": "0002",
+  "conn_count": 4,
   "schema_version": 1,
-  "session_id": "681dc77a-bea9-4017-9a06-094cc4f21a98",
+  "session_id": "eb5b01a4-62b6-4dc4-854d-f530898d2c26",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
