@@ -44,7 +44,7 @@ permissions:
 
 jobs:
   setup_matrix:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       matrix: ${{ steps.build.outputs.matrix }}
     steps:
