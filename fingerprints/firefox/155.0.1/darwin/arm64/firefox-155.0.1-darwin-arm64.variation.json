@@ -5,7 +5,7 @@
   "canonical_conn": "0002",
   "conn_count": 4,
   "schema_version": 1,
-  "session_id": "f07e7806-ee71-4bf5-be84-128e7d1803d4",
+  "session_id": "e1f10ffc-42ef-4bbe-93a0-f55193274343",
   "stable": [
     "ciphers_multiset",
     "supported_groups",
