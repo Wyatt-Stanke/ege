@@ -1,0 +1,17 @@
+{
+  "anomalies": [
+    "extension_types_differ_unexpectedly:0x001b,0x0023"
+  ],
+  "canonical_conn": "0002",
+  "conn_count": 4,
+  "schema_version": 1,
+  "session_id": "e8983015-d740-41a2-998b-b6c961944ac0",
+  "stable": [
+    "ciphers_multiset",
+    "supported_groups",
+    "signature_algorithms",
+    "extension_order",
+    "key_share_group_order"
+  ],
+  "varied": {}
+}
